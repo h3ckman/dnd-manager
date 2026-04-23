@@ -4,6 +4,8 @@ export * from "./backgrounds";
 export * from "./classes";
 export * from "./conditions";
 export * from "./dice";
+export * from "./item-catalog";
 export * from "./leveling";
 export * from "./races";
 export * from "./skills";
+export * from "./spell-catalog";

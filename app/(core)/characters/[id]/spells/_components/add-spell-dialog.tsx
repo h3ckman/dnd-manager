@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { addSpell } from "@/lib/actions/spells";
+import { SPELL_CATALOG, type CatalogSpell } from "@/lib/dnd";
 import type { SpellSchool } from "@/lib/generated/prisma/client";
 
 const SCHOOLS: SpellSchool[] = [
@@ -28,8 +29,11 @@ const SCHOOLS: SpellSchool[] = [
   "TRANSMUTATION",
 ];
 
+const CUSTOM = "__custom__";
+
 export function AddSpellDialog({ characterId }: { characterId: string }) {
   const [open, setOpen] = useState(false);
+  const [preset, setPreset] = useState<string>(CUSTOM);
   const [name, setName] = useState("");
   const [level, setLevel] = useState(0);
   const [school, setSchool] = useState<SpellSchool>("EVOCATION");
@@ -39,6 +43,43 @@ export function AddSpellDialog({ characterId }: { characterId: string }) {
   const [duration, setDuration] = useState("Instantaneous");
   const [description, setDescription] = useState("");
   const [pending, startTransition] = useTransition();
+
+  const groups = useMemo(() => {
+    const byLevel = new Map<number, CatalogSpell[]>();
+    for (const s of SPELL_CATALOG) {
+      const arr = byLevel.get(s.level) ?? [];
+      arr.push(s);
+      byLevel.set(s.level, arr);
+    }
+    return [...byLevel.entries()].sort((a, b) => a[0] - b[0]);
+  }, []);
+
+  function applyPreset(presetName: string) {
+    setPreset(presetName);
+    if (presetName === CUSTOM) return;
+    const found = SPELL_CATALOG.find((s) => s.name === presetName);
+    if (!found) return;
+    setName(found.name);
+    setLevel(found.level);
+    setSchool(found.school);
+    setCastingTime(found.castingTime);
+    setRange(found.range);
+    setComponents(found.components);
+    setDuration(found.duration);
+    setDescription(found.description);
+  }
+
+  function reset() {
+    setPreset(CUSTOM);
+    setName("");
+    setLevel(0);
+    setSchool("EVOCATION");
+    setCastingTime("1 action");
+    setRange("30 feet");
+    setComponents("V, S");
+    setDuration("Instantaneous");
+    setDescription("");
+  }
 
   function submit() {
     if (!name.trim()) {
@@ -62,14 +103,19 @@ export function AddSpellDialog({ characterId }: { characterId: string }) {
       else {
         toast.success("Spell added");
         setOpen(false);
-        setName("");
-        setDescription("");
+        reset();
       }
     });
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) reset();
+      }}
+    >
       <DialogTrigger render={<Button size="sm" />}>
         <PlusIcon className="size-4" />
         Add spell
@@ -79,6 +125,30 @@ export function AddSpellDialog({ characterId }: { characterId: string }) {
           <DialogTitle>Add spell</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="spell-preset">Pick from catalog</Label>
+            <select
+              id="spell-preset"
+              value={preset}
+              onChange={(e) => applyPreset(e.target.value)}
+              className="rounded-md border bg-background px-3 py-2 text-sm"
+            >
+              <option value={CUSTOM}>Custom (enter manually)</option>
+              {groups.map(([lvl, spells]) => (
+                <optgroup
+                  key={lvl}
+                  label={lvl === 0 ? "Cantrips" : `Level ${lvl}`}
+                >
+                  {spells.map((s) => (
+                    <option key={s.name} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="spell-name">Name</Label>
             <Input

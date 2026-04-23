@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { addInventoryItem } from "@/lib/actions/inventory";
+import { ITEM_CATALOG, type CatalogItem } from "@/lib/dnd";
+import type {
+  ItemRarity,
+  ItemType,
+} from "@/lib/generated/prisma/client";
 
-const TYPES = [
+const TYPES: ItemType[] = [
   "WEAPON",
   "ARMOR",
   "SHIELD",
@@ -24,26 +29,73 @@ const TYPES = [
   "CONSUMABLE",
   "TREASURE",
   "MISC",
-] as const;
+];
 
-const RARITIES = [
+const RARITIES: ItemRarity[] = [
   "COMMON",
   "UNCOMMON",
   "RARE",
   "VERY_RARE",
   "LEGENDARY",
   "ARTIFACT",
-] as const;
+];
+
+const TYPE_LABELS: Record<ItemType, string> = {
+  WEAPON: "Weapons",
+  ARMOR: "Armor",
+  SHIELD: "Shields",
+  TOOL: "Tools",
+  CONSUMABLE: "Consumables",
+  TREASURE: "Treasure",
+  MISC: "Gear",
+};
+
+const CUSTOM = "__custom__";
 
 export function AddItemDialog({ characterId }: { characterId: string }) {
   const [open, setOpen] = useState(false);
+  const [preset, setPreset] = useState<string>(CUSTOM);
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [weight, setWeight] = useState("0");
-  const [type, setType] = useState<(typeof TYPES)[number]>("MISC");
-  const [rarity, setRarity] = useState<(typeof RARITIES)[number]>("COMMON");
+  const [type, setType] = useState<ItemType>("MISC");
+  const [rarity, setRarity] = useState<ItemRarity>("COMMON");
   const [description, setDescription] = useState("");
   const [pending, startTransition] = useTransition();
+
+  const groups = useMemo(() => {
+    const byType = new Map<ItemType, CatalogItem[]>();
+    for (const i of ITEM_CATALOG) {
+      const arr = byType.get(i.type) ?? [];
+      arr.push(i);
+      byType.set(i.type, arr);
+    }
+    return TYPES.filter((t) => byType.has(t)).map(
+      (t) => [t, byType.get(t)!] as const,
+    );
+  }, []);
+
+  function applyPreset(presetName: string) {
+    setPreset(presetName);
+    if (presetName === CUSTOM) return;
+    const found = ITEM_CATALOG.find((i) => i.name === presetName);
+    if (!found) return;
+    setName(found.name);
+    setWeight(String(found.weight));
+    setType(found.type);
+    setRarity(found.rarity);
+    setDescription(found.description);
+  }
+
+  function reset() {
+    setPreset(CUSTOM);
+    setName("");
+    setQuantity("1");
+    setWeight("0");
+    setType("MISC");
+    setRarity("COMMON");
+    setDescription("");
+  }
 
   function submit() {
     if (!name.trim()) {
@@ -65,18 +117,19 @@ export function AddItemDialog({ characterId }: { characterId: string }) {
       else {
         toast.success("Item added");
         setOpen(false);
-        setName("");
-        setQuantity("1");
-        setWeight("0");
-        setDescription("");
-        setType("MISC");
-        setRarity("COMMON");
+        reset();
       }
     });
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) reset();
+      }}
+    >
       <DialogTrigger render={<Button size="sm" />}>
         <PlusIcon className="size-4" />
         Add item
@@ -86,6 +139,26 @@ export function AddItemDialog({ characterId }: { characterId: string }) {
           <DialogTitle>Add item</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="item-preset">Pick from catalog</Label>
+            <select
+              id="item-preset"
+              value={preset}
+              onChange={(e) => applyPreset(e.target.value)}
+              className="rounded-md border bg-background px-3 py-2 text-sm"
+            >
+              <option value={CUSTOM}>Custom (enter manually)</option>
+              {groups.map(([t, items]) => (
+                <optgroup key={t} label={TYPE_LABELS[t]}>
+                  {items.map((i) => (
+                    <option key={i.name} value={i.name}>
+                      {i.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="item-name">Name</Label>
             <Input
@@ -123,7 +196,7 @@ export function AddItemDialog({ characterId }: { characterId: string }) {
               <select
                 id="item-type"
                 value={type}
-                onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
+                onChange={(e) => setType(e.target.value as ItemType)}
                 className="rounded-md border bg-background px-3 py-2 text-sm"
               >
                 {TYPES.map((t) => (
@@ -138,9 +211,7 @@ export function AddItemDialog({ characterId }: { characterId: string }) {
               <select
                 id="item-rarity"
                 value={rarity}
-                onChange={(e) =>
-                  setRarity(e.target.value as (typeof RARITIES)[number])
-                }
+                onChange={(e) => setRarity(e.target.value as ItemRarity)}
                 className="rounded-md border bg-background px-3 py-2 text-sm"
               >
                 {RARITIES.map((r) => (
