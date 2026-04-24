@@ -1,14 +1,5 @@
-import Link from "next/link";
 import { requireCharacter } from "@/lib/characters/access";
-import { Card } from "@/components/ui/card";
-
-const TABS = [
-  { href: "sheet", label: "Sheet" },
-  { href: "inventory", label: "Inventory" },
-  { href: "spells", label: "Spells" },
-  { href: "features", label: "Features" },
-  { href: "notes", label: "Notes" },
-] as const;
+import { TabBar } from "@/app/(core)/_components/tab-bar";
 
 export default async function CharacterLayout({
   children,
@@ -19,6 +10,14 @@ export default async function CharacterLayout({
 }) {
   const { id } = await params;
   const { character } = await requireCharacter(id);
+
+  const tabs = [
+    { href: `/characters/${id}/sheet`, label: "Sheet" },
+    { href: `/characters/${id}/inventory`, label: "Inventory" },
+    { href: `/characters/${id}/spells`, label: "Spells" },
+    { href: `/characters/${id}/features`, label: "Features" },
+    { href: `/characters/${id}/notes`, label: "Notes" },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -37,17 +36,7 @@ export default async function CharacterLayout({
         </p>
       </header>
 
-      <Card className="flex flex-row gap-1 p-1">
-        {TABS.map((t) => (
-          <Link
-            key={t.href}
-            href={`/characters/${id}/${t.href}`}
-            className="flex-1 rounded-md px-3 py-1.5 text-center text-sm hover:bg-muted"
-          >
-            {t.label}
-          </Link>
-        ))}
-      </Card>
+      <TabBar tabs={tabs} />
 
       {children}
     </div>

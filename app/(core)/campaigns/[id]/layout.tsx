@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { requireCampaignMember } from "@/lib/campaigns/access";
-import { Card } from "@/components/ui/card";
+import { TabBar } from "@/app/(core)/_components/tab-bar";
 
 export default async function CampaignLayout({
   children,
@@ -13,11 +12,13 @@ export default async function CampaignLayout({
   const { campaign, role } = await requireCampaignMember(id);
 
   const tabs = [
-    { href: "", label: "Overview" },
-    { href: "roster", label: "Roster" },
-    { href: "handouts", label: "Handouts" },
-    { href: "sessions", label: "Session Log" },
-    ...(role === "DM" ? [{ href: "settings", label: "Settings" }] : []),
+    { href: `/campaigns/${id}`, label: "Overview" },
+    { href: `/campaigns/${id}/roster`, label: "Roster" },
+    { href: `/campaigns/${id}/handouts`, label: "Handouts" },
+    { href: `/campaigns/${id}/sessions`, label: "Session Log" },
+    ...(role === "DM"
+      ? [{ href: `/campaigns/${id}/settings`, label: "Settings" }]
+      : []),
   ];
 
   return (
@@ -34,17 +35,7 @@ export default async function CampaignLayout({
         )}
       </header>
 
-      <Card className="flex flex-row gap-1 p-1">
-        {tabs.map((t) => (
-          <Link
-            key={t.href || "overview"}
-            href={`/campaigns/${id}${t.href ? `/${t.href}` : ""}`}
-            className="flex-1 rounded-md px-3 py-1.5 text-center text-sm hover:bg-muted"
-          >
-            {t.label}
-          </Link>
-        ))}
-      </Card>
+      <TabBar tabs={tabs} />
 
       {children}
     </div>
