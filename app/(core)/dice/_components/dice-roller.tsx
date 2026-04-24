@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { DicesIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { rollDice, type DiceRollResult } from "@/lib/dnd";
 
@@ -98,16 +104,18 @@ export function DiceRoller() {
       </Card>
 
       <Card>
-        <CardHeader className="flex-row items-center justify-between">
+        <CardHeader>
           <CardTitle>History</CardTitle>
           {history.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setHistory([])}
-            >
-              Clear
-            </Button>
+            <CardAction>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setHistory([])}
+              >
+                Clear
+              </Button>
+            </CardAction>
           )}
         </CardHeader>
         <CardContent className="flex flex-col gap-2">

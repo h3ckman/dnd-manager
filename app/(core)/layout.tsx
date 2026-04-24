@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { getSession } from "@/lib/auth/session";
 import { listCharactersForUser } from "@/lib/characters/access";
 import { readActiveCharacterId } from "@/lib/characters/active";
+import { listCampaignsForUser } from "@/lib/campaigns/access";
 
 export default async function AuthedLayout({
   children,
@@ -19,9 +20,10 @@ export default async function AuthedLayout({
   const session = await getSession();
   if (!session) redirect("/login");
 
-  const [characters, activeCharacterId] = await Promise.all([
+  const [characters, activeCharacterId, campaigns] = await Promise.all([
     listCharactersForUser(session.user.id),
     readActiveCharacterId(),
+    listCampaignsForUser(session.user.id),
   ]);
 
   return (
@@ -33,6 +35,7 @@ export default async function AuthedLayout({
           user={session.user}
           characters={characters}
           activeCharacterId={activeCharacterId}
+          campaigns={campaigns}
         />
         <SidebarInset>
           <header className="flex h-14 shrink-0 items-center gap-2">

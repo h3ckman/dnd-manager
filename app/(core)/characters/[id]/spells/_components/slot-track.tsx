@@ -2,7 +2,13 @@
 
 import { useTransition } from "react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { adjustSlot, updateSlotMaxes } from "@/lib/actions/spells";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -48,15 +54,17 @@ export function SlotTrack({
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle>Spell Slots</CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setEditing(!editing)}
-        >
-          {editing ? "Cancel" : "Edit maxes"}
-        </Button>
+        <CardAction>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setEditing(!editing)}
+          >
+            {editing ? "Cancel" : "Edit maxes"}
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">
         {slots.map((s, idx) => {

@@ -86,6 +86,11 @@ enum NoteCategory {
   OTHER
 }
 
+enum CampaignRole {
+  DM
+  PLAYER
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -99,6 +104,12 @@ model User {
   sessions   Session[]
   auditLogs  AuditLog[]
   characters Character[]
+
+  campaignsAsDm       Campaign[]           @relation("CampaignDm")
+  campaignMemberships CampaignMembership[]
+  handoutsAuthored    Handout[]            @relation("HandoutAuthor")
+  handoutsReceived    HandoutRecipient[]
+  sessionLogsAuthored SessionLog[]         @relation("SessionAuthor")
 }
 
 model Session {
@@ -194,6 +205,8 @@ model Character {
   features     Feature[]
   conditions   Condition[]
   notes        Note[]
+
+  campaignMemberships CampaignMembership[]
 
   @@index([userId])
 }
@@ -300,4 +313,82 @@ model Note {
 
   @@index([characterId])
   @@index([characterId, pinned])
+}
+
+model Campaign {
+  id         String   @id @default(cuid())
+  name       String
+  setting    String?
+  premise    String?
+  dmUserId   String
+  dm         User     @relation("CampaignDm", fields: [dmUserId], references: [id], onDelete: Cascade)
+  inviteCode String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  memberships CampaignMembership[]
+  handouts    Handout[]
+  sessionLogs SessionLog[]
+
+  @@index([dmUserId])
+}
+
+model CampaignMembership {
+  id          String       @id @default(cuid())
+  campaignId  String
+  campaign    Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        CampaignRole @default(PLAYER)
+  characterId String?
+  character   Character?   @relation(fields: [characterId], references: [id], onDelete: SetNull)
+  joinedAt    DateTime     @default(now())
+
+  @@unique([campaignId, userId])
+  @@index([userId])
+  @@index([characterId])
+}
+
+model Handout {
+  id           String   @id @default(cuid())
+  campaignId   String
+  campaign     Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  authorUserId String
+  author       User     @relation("HandoutAuthor", fields: [authorUserId], references: [id])
+  title        String
+  body         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  recipients HandoutRecipient[]
+
+  @@index([campaignId])
+}
+
+model HandoutRecipient {
+  id        String    @id @default(cuid())
+  handoutId String
+  handout   Handout   @relation(fields: [handoutId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pinned    Boolean   @default(false)
+  readAt    DateTime?
+
+  @@unique([handoutId, userId])
+  @@index([userId])
+}
+
+model SessionLog {
+  id           String    @id @default(cuid())
+  campaignId   String
+  campaign     Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  authorUserId String
+  author       User      @relation("SessionAuthor", fields: [authorUserId], references: [id])
+  title        String
+  body         String
+  sessionDate  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([campaignId])
 }

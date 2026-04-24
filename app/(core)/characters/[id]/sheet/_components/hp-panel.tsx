@@ -4,7 +4,13 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { adjustHp, setTempHp, toggleInspiration } from "@/lib/actions/sheet";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SparklesIcon } from "lucide-react";
 
@@ -54,22 +60,24 @@ export function HpPanel({
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle>Hit Points</CardTitle>
-        <button
-          disabled={pending}
-          onClick={() =>
-            startTransition(async () => {
-              const res = await toggleInspiration(characterId);
-              if (res.error) toast.error(res.error);
-            })
-          }
-          className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs ${inspiration ? "border-amber-500 text-amber-600" : "text-muted-foreground"}`}
-          title="Inspiration"
-        >
-          <SparklesIcon className="size-3.5" />
-          {inspiration ? "Inspired" : "Inspiration"}
-        </button>
+        <CardAction>
+          <button
+            disabled={pending}
+            onClick={() =>
+              startTransition(async () => {
+                const res = await toggleInspiration(characterId);
+                if (res.error) toast.error(res.error);
+              })
+            }
+            className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs ${inspiration ? "border-amber-500 text-amber-600" : "text-muted-foreground"}`}
+            title="Inspiration"
+          >
+            <SparklesIcon className="size-3.5" />
+            {inspiration ? "Inspired" : "Inspiration"}
+          </button>
+        </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div>
