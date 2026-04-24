@@ -4,6 +4,7 @@ import { listCharactersForUser } from "@/lib/characters/access";
 import { Card, CardContent } from "@/components/ui/card";
 import { AssignCharacterDialog } from "./_components/assign-character-dialog";
 import { RemoveMemberButton } from "./_components/remove-member-button";
+import { CharacterStatus } from "./_components/character-status";
 
 export default async function RosterPage({
   params,
@@ -23,7 +24,23 @@ export default async function RosterPage({
           name: true,
           race: true,
           characterClass: true,
+          subclass: true,
           level: true,
+          armorClass: true,
+          maxHp: true,
+          currentHp: true,
+          tempHp: true,
+          speed: true,
+          inspiration: true,
+          abilities: { select: { ability: true, score: true } },
+          skills: {
+            select: { skill: true, proficient: true, expertise: true },
+            where: { skill: "PERCEPTION" },
+          },
+          conditions: {
+            select: { id: true, name: true, level: true },
+            orderBy: { name: "asc" },
+          },
         },
       },
     },
@@ -39,11 +56,11 @@ export default async function RosterPage({
         const isDm = m.role === "DM";
         return (
           <Card key={m.id}>
-            <CardContent className="flex items-center gap-3 py-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-muted text-sm font-semibold">
+            <CardContent className="flex items-start gap-3 py-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold">
                 {m.user.name.slice(0, 1).toUpperCase()}
               </div>
-              <div className="flex-1">
+              <div className="flex flex-1 flex-col gap-1">
                 <div className="flex items-baseline gap-2">
                   <span className="font-medium">{m.user.name}</span>
                   <span className="text-xs text-muted-foreground">
@@ -51,28 +68,43 @@ export default async function RosterPage({
                     {isSelf ? " · you" : ""}
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {m.character
-                    ? `Playing: ${m.character.name} (Lvl ${m.character.level} ${m.character.race} ${m.character.characterClass})`
-                    : isDm
+                {m.character ? (
+                  <>
+                    <div className="text-xs text-muted-foreground">
+                      Playing:{" "}
+                      <span className="font-medium text-foreground">
+                        {m.character.name}
+                      </span>{" "}
+                      · Lvl {m.character.level} {m.character.race}{" "}
+                      {m.character.characterClass}
+                      {m.character.subclass ? ` (${m.character.subclass})` : ""}
+                    </div>
+                    <CharacterStatus character={m.character} />
+                  </>
+                ) : (
+                  <div className="text-xs text-muted-foreground">
+                    {isDm
                       ? "No character (DM)"
                       : "No character assigned yet"}
-                </div>
+                  </div>
+                )}
               </div>
-              {isSelf && !isDm && (
-                <AssignCharacterDialog
-                  campaignId={id}
-                  currentCharacterId={m.characterId}
-                  characters={myCharacters}
-                />
-              )}
-              {role === "DM" && !isSelf && (
-                <RemoveMemberButton
-                  campaignId={id}
-                  userId={m.userId}
-                  name={m.user.name}
-                />
-              )}
+              <div className="flex shrink-0 items-center gap-1">
+                {isSelf && !isDm && (
+                  <AssignCharacterDialog
+                    campaignId={id}
+                    currentCharacterId={m.characterId}
+                    characters={myCharacters}
+                  />
+                )}
+                {role === "DM" && !isSelf && (
+                  <RemoveMemberButton
+                    campaignId={id}
+                    userId={m.userId}
+                    name={m.user.name}
+                  />
+                )}
+              </div>
             </CardContent>
           </Card>
         );
