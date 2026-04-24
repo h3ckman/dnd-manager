@@ -11,6 +11,7 @@ import {
 } from "./character-switcher";
 import { UserMenu } from "./user-menu";
 import type { Role } from "@/lib/generated/prisma/client";
+import type { CampaignSummary } from "@/lib/campaigns/access";
 import {
   Sidebar,
   SidebarContent,
@@ -21,14 +22,19 @@ import {
 import {
   BookOpenIcon,
   BookTextIcon,
+  CrownIcon,
   DicesIcon,
   HomeIcon,
+  InfoIcon,
   MessageCircleQuestionIcon,
   NotebookTextIcon,
   PackageIcon,
   ScrollTextIcon,
+  SendIcon,
   Settings2Icon,
+  ShieldAlertIcon,
   SparklesIcon,
+  SwordsIcon,
   UsersIcon,
 } from "lucide-react";
 
@@ -42,15 +48,25 @@ export function AppSidebar({
   user,
   characters,
   activeCharacterId,
+  campaigns,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   user: { name: string; email: string; role: Role };
   characters: CharacterSummary[];
   activeCharacterId: string | null;
+  campaigns: CampaignSummary[];
 }) {
   const pathname = usePathname();
   const active =
     characters.find((c) => c.id === activeCharacterId) ?? characters[0] ?? null;
+
+  const campaignMatch = pathname.match(/^\/campaigns\/([^/]+)/);
+  const urlCampaignId =
+    campaignMatch && campaignMatch[1] !== "join" ? campaignMatch[1] : null;
+  const currentCampaign =
+    (urlCampaignId && campaigns.find((c) => c.id === urlCampaignId)) ||
+    campaigns[0] ||
+    null;
 
   const characterNav: NavItem[] = active
     ? [
@@ -82,9 +98,46 @@ export function AppSidebar({
       ]
     : [];
 
+  const campaignNav: NavItem[] = currentCampaign
+    ? [
+        {
+          title: "Overview",
+          url: `/campaigns/${currentCampaign.id}`,
+          icon: <InfoIcon />,
+        },
+        {
+          title: "Roster",
+          url: `/campaigns/${currentCampaign.id}/roster`,
+          icon: <UsersIcon />,
+        },
+        {
+          title: "Handouts",
+          url: `/campaigns/${currentCampaign.id}/handouts`,
+          icon: <SendIcon />,
+        },
+        {
+          title: "Session Log",
+          url: `/campaigns/${currentCampaign.id}/sessions`,
+          icon: <BookOpenIcon />,
+        },
+      ]
+    : [];
+
+  const dmTools: NavItem[] =
+    currentCampaign && currentCampaign.role === "DM"
+      ? [
+          {
+            title: "Settings",
+            url: `/campaigns/${currentCampaign.id}/settings`,
+            icon: <ShieldAlertIcon />,
+          },
+        ]
+      : [];
+
   const topNav: NavItem[] = [
     { title: "Home", url: "/", icon: <HomeIcon /> },
     { title: "Characters", url: "/characters", icon: <UsersIcon /> },
+    { title: "Campaigns", url: "/campaigns", icon: <SwordsIcon /> },
     { title: "Dice Roller", url: "/dice", icon: <DicesIcon /> },
   ];
 
@@ -114,6 +167,24 @@ export function AppSidebar({
               {active.name}
             </div>
             <NavMain items={characterNav} pathname={pathname} />
+          </div>
+        )}
+        {currentCampaign && (
+          <div className="mt-4 px-2">
+            <div className="mb-1 px-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <SwordsIcon className="mr-1 inline size-3" />
+              {currentCampaign.name}
+            </div>
+            <NavMain items={campaignNav} pathname={pathname} />
+            {dmTools.length > 0 && (
+              <>
+                <div className="mb-1 mt-3 px-2 text-xs font-medium uppercase tracking-wide text-amber-600">
+                  <CrownIcon className="mr-1 inline size-3" />
+                  DM Tools
+                </div>
+                <NavMain items={dmTools} pathname={pathname} />
+              </>
+            )}
           </div>
         )}
         <NavSecondary
