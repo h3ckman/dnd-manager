@@ -4,7 +4,13 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { PinIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { deleteNote, updateNote } from "@/lib/actions/notes";
 import { renderMarkdown } from "@/lib/markdown";
@@ -71,55 +77,59 @@ export function NoteEditor({
 
   return (
     <Card>
-      <CardContent className="flex flex-col gap-3 py-4">
-        <div className="flex items-center gap-2">
+      <CardHeader>
+        <CardTitle>
           {editing ? (
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="flex-1"
             />
           ) : (
-            <h3 className="flex-1 text-lg font-semibold">{note.title}</h3>
+            note.title
           )}
-          {editing ? (
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as NoteCategory)}
-              className="rounded-md border bg-background px-2 py-1 text-xs"
+        </CardTitle>
+        <CardAction>
+          <div className="flex items-center gap-2">
+            {editing ? (
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value as NoteCategory)}
+                className="rounded-md border bg-background px-2 py-1 text-xs"
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                {note.category}
+              </span>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={pending}
+              onClick={togglePin}
+              title={note.pinned ? "Unpin" : "Pin"}
             >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-              {note.category}
-            </span>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={pending}
-            onClick={togglePin}
-            title={note.pinned ? "Unpin" : "Pin"}
-          >
-            <PinIcon
-              className={`size-4 ${note.pinned ? "text-amber-500" : ""}`}
-            />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            disabled={pending}
-            onClick={remove}
-          >
-            <Trash2Icon className="size-4" />
-          </Button>
-        </div>
-
+              <PinIcon
+                className={`size-4 ${note.pinned ? "text-amber-500" : ""}`}
+              />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={pending}
+              onClick={remove}
+            >
+              <Trash2Icon className="size-4" />
+            </Button>
+          </div>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
         {editing ? (
           <>
             <textarea

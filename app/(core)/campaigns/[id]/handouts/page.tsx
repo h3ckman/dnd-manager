@@ -1,7 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { requireCampaignMember } from "@/lib/campaigns/access";
 import { renderMarkdown } from "@/lib/markdown";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ComposeHandoutDialog } from "./_components/compose-handout-dialog";
 import { DeleteHandoutButton } from "./_components/delete-handout-button";
 import { format } from "date-fns";
@@ -75,33 +82,32 @@ export default async function HandoutsPage({
       ) : (
         handouts.map((h) => {
           const rendered = renderMarkdown(h.body);
+          const recipientNames =
+            role === "DM" && "recipients" in h
+              ? h.recipients
+                  .map((r) => {
+                    const u = (
+                      r as unknown as { user: { name: string } }
+                    ).user;
+                    return u?.name ?? "?";
+                  })
+                  .join(", ")
+              : null;
           return (
             <Card key={h.id}>
-              <CardContent className="flex flex-col gap-2 py-4">
-                <div className="flex items-baseline gap-2">
-                  <h3 className="flex-1 text-lg font-semibold">{h.title}</h3>
-                  <span className="text-xs text-muted-foreground">
-                    {format(h.createdAt, "MMM d, yyyy p")}
-                  </span>
-                  {role === "DM" && (
+              <CardHeader>
+                <CardTitle>{h.title}</CardTitle>
+                <CardDescription>
+                  {format(h.createdAt, "MMM d, yyyy p")}
+                  {recipientNames && ` · To: ${recipientNames}`}
+                </CardDescription>
+                {role === "DM" && (
+                  <CardAction>
                     <DeleteHandoutButton handoutId={h.id} title={h.title} />
-                  )}
-                </div>
-                {role === "DM" && "recipients" in h && (
-                  <div className="text-xs text-muted-foreground">
-                    To:{" "}
-                    {h.recipients
-                      .map((r) => {
-                        const u = (
-                          r as unknown as {
-                            user: { name: string };
-                          }
-                        ).user;
-                        return u?.name ?? "?";
-                      })
-                      .join(", ")}
-                  </div>
+                  </CardAction>
                 )}
+              </CardHeader>
+              <CardContent>
                 {h.body && (
                   <div
                     className="prose-sm max-w-none text-sm [&_a]:underline [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_h1]:text-lg [&_h1]:font-semibold [&_h2]:font-semibold [&_li]:ml-4 [&_li]:list-disc [&_ol_li]:list-decimal [&_p]:mb-2 [&_pre]:overflow-x-auto [&_pre]:rounded-md [&_pre]:bg-muted [&_pre]:p-2"

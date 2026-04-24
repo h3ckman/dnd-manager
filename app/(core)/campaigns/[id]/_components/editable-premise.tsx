@@ -4,7 +4,14 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { PencilIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { updateCampaign } from "@/lib/actions/campaigns";
 
 export function EditablePremise({
@@ -75,36 +82,45 @@ export function EditablePremise({
   if (!premise) {
     return (
       <Card>
-        <CardContent className="flex items-center gap-3 py-8">
-          <p className="flex-1 text-center text-sm text-muted-foreground">
+        <CardHeader>
+          <CardTitle>Premise</CardTitle>
+          <CardDescription>
             {canEdit
               ? "No premise yet. Share what the campaign is about."
               : "No premise yet. The DM hasn't added one."}
-          </p>
+          </CardDescription>
           {canEdit && (
-            <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
-              <PencilIcon className="size-4" />
-              Add premise
-            </Button>
+            <CardAction>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setEditing(true)}
+                title="Add premise"
+              >
+                <PencilIcon className="size-4" />
+              </Button>
+            </CardAction>
           )}
-        </CardContent>
+        </CardHeader>
       </Card>
     );
   }
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle>Premise</CardTitle>
         {canEdit && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => setEditing(true)}
-            title="Edit premise"
-          >
-            <PencilIcon className="size-4" />
-          </Button>
+          <CardAction>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setEditing(true)}
+              title="Edit premise"
+            >
+              <PencilIcon className="size-4" />
+            </Button>
+          </CardAction>
         )}
       </CardHeader>
       <CardContent>
