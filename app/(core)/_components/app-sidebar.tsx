@@ -32,7 +32,6 @@ import {
   ScrollTextIcon,
   SendIcon,
   Settings2Icon,
-  ShieldAlertIcon,
   SparklesIcon,
   SwordsIcon,
   UsersIcon,
@@ -120,19 +119,17 @@ export function AppSidebar({
           url: `/campaigns/${currentCampaign.id}/sessions`,
           icon: <BookOpenIcon />,
         },
+        ...(currentCampaign.role === "DM"
+          ? [
+              {
+                title: "Campaign Settings",
+                url: `/campaigns/${currentCampaign.id}/settings`,
+                icon: <CrownIcon />,
+              },
+            ]
+          : []),
       ]
     : [];
-
-  const dmTools: NavItem[] =
-    currentCampaign && currentCampaign.role === "DM"
-      ? [
-          {
-            title: "Settings",
-            url: `/campaigns/${currentCampaign.id}/settings`,
-            icon: <ShieldAlertIcon />,
-          },
-        ]
-      : [];
 
   const topNav: NavItem[] = [
     { title: "Home", url: "/", icon: <HomeIcon /> },
@@ -176,15 +173,6 @@ export function AppSidebar({
               {currentCampaign.name}
             </div>
             <NavMain items={campaignNav} pathname={pathname} />
-            {dmTools.length > 0 && (
-              <>
-                <div className="mb-1 mt-3 px-2 text-xs font-medium uppercase tracking-wide text-amber-600">
-                  <CrownIcon className="mr-1 inline size-3" />
-                  DM Tools
-                </div>
-                <NavMain items={dmTools} pathname={pathname} />
-              </>
-            )}
           </div>
         )}
         <NavSecondary
