@@ -25,33 +25,33 @@ export default async function CharacterLayout({
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center gap-4">
-        <div className="relative">
-          <Portrait
-            src={character.portraitUrl}
-            alt={character.name}
-            size={72}
-            rounded="lg"
-            fallbackText={character.name}
-          />
+      <header className="flex items-center gap-6">
+        <div className="relative shrink-0">
+          <div className="overflow-hidden rounded-xl ring-1 ring-foreground/10 shadow-lg">
+            <Portrait
+              src={character.portraitUrl}
+              alt={character.name}
+              size={144}
+              rounded="lg"
+              fallbackText={character.name}
+            />
+          </div>
           <PortraitEditorDialog
             characterId={id}
             currentPortraitUrl={character.portraitUrl}
             presets={presets}
           />
         </div>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-2xl font-bold tracking-tight">
-              {character.name}
-            </h1>
-            <span className="text-sm text-muted-foreground">
-              Level {character.level} {character.race}{" "}
-              {character.characterClass}
-              {character.subclass ? ` (${character.subclass})` : ""}
-            </span>
-          </div>
-          <p className="text-xs text-muted-foreground">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-4xl font-bold tracking-tight">
+            {character.name}
+          </h1>
+          <p className="text-base text-muted-foreground">
+            Level {character.level} {character.race}{" "}
+            {character.characterClass}
+            {character.subclass ? ` (${character.subclass})` : ""}
+          </p>
+          <p className="text-sm text-muted-foreground">
             {character.background} · {character.alignment}
           </p>
         </div>
