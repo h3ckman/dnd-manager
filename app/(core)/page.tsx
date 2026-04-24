@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Portrait } from "./_components/portrait";
 import {
   DicesIcon,
   NotebookTextIcon,
@@ -41,25 +42,52 @@ export default async function Home() {
 
       {active ? (
         <Card>
-          <CardHeader>
-            <CardTitle>{active.name}</CardTitle>
-            <CardDescription>
-              Level {active.level} {active.race} {active.characterClass}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-wrap gap-2">
-            <LinkButton href={`/characters/${active.id}/sheet`} icon={<ScrollTextIcon />}>
-              Sheet
-            </LinkButton>
-            <LinkButton href={`/characters/${active.id}/inventory`} icon={<PackageIcon />}>
-              Inventory
-            </LinkButton>
-            <LinkButton href={`/characters/${active.id}/spells`} icon={<SparklesIcon />}>
-              Spells
-            </LinkButton>
-            <LinkButton href={`/characters/${active.id}/notes`} icon={<NotebookTextIcon />}>
-              Notes
-            </LinkButton>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex items-center gap-6">
+              <div className="shrink-0 overflow-hidden rounded-xl ring-1 ring-foreground/10 shadow-lg">
+                <Portrait
+                  src={active.portraitUrl}
+                  alt={active.name}
+                  size={128}
+                  rounded="lg"
+                  fallbackText={active.name}
+                />
+              </div>
+              <div className="flex min-w-0 flex-col gap-1">
+                <h2 className="text-3xl font-bold tracking-tight">
+                  {active.name}
+                </h2>
+                <p className="text-base text-muted-foreground">
+                  Level {active.level} {active.race} {active.characterClass}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <LinkButton
+                href={`/characters/${active.id}/sheet`}
+                icon={<ScrollTextIcon />}
+              >
+                Sheet
+              </LinkButton>
+              <LinkButton
+                href={`/characters/${active.id}/inventory`}
+                icon={<PackageIcon />}
+              >
+                Inventory
+              </LinkButton>
+              <LinkButton
+                href={`/characters/${active.id}/spells`}
+                icon={<SparklesIcon />}
+              >
+                Spells
+              </LinkButton>
+              <LinkButton
+                href={`/characters/${active.id}/notes`}
+                icon={<NotebookTextIcon />}
+              >
+                Notes
+              </LinkButton>
+            </div>
           </CardContent>
         </Card>
       ) : (

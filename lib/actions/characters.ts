@@ -15,6 +15,14 @@ type ActionResult<T> =
   | { data: T; error: null }
   | { data: null; error: string };
 
+const PortraitSchema = z
+  .string()
+  .max(800_000, "Portrait too large")
+  .refine(
+    (v) => v.startsWith("/portraits/") || v.startsWith("data:image/"),
+    "Portrait must be a preset path or image data URL",
+  );
+
 const CreateSchema = z.object({
   name: z.string().min(1, "Name required").max(60),
   race: z.string().min(1, "Race required"),
@@ -23,6 +31,7 @@ const CreateSchema = z.object({
   subclass: z.string().optional(),
   background: z.string().min(1, "Background required"),
   alignment: z.string().min(1, "Alignment required"),
+  portraitUrl: PortraitSchema.optional(),
 });
 
 export async function createCharacter(
@@ -40,6 +49,7 @@ export async function createCharacter(
     subclass: formData.get("subclass") || undefined,
     background: formData.get("background"),
     alignment: formData.get("alignment"),
+    portraitUrl: formData.get("portraitUrl") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -58,6 +68,7 @@ export async function createCharacter(
       subclass: parsed.data.subclass,
       background: parsed.data.background,
       alignment: parsed.data.alignment,
+      portraitUrl: parsed.data.portraitUrl,
       level: 1,
       hitDieType: classDef?.hitDie ?? 8,
       hitDiceTotal: 1,
@@ -157,6 +168,38 @@ export async function updateCharacterIdentity(
     data: parsed.data,
   });
   revalidatePath(`/characters/${characterId}`);
+  revalidatePath("/", "layout");
+  return { data: { id: characterId }, error: null };
+}
+
+export async function updateCharacterPortrait(
+  characterId: string,
+  portraitUrl: string | null,
+): Promise<ActionResult<{ id: string }>> {
+  const session = await getSession();
+  if (!session) return { data: null, error: "Unauthorized" };
+
+  if (portraitUrl !== null) {
+    const parsed = PortraitSchema.safeParse(portraitUrl);
+    if (!parsed.success) {
+      return {
+        data: null,
+        error: parsed.error.issues[0]?.message ?? "Invalid portrait",
+      };
+    }
+  }
+
+  const existing = await prisma.character.findFirst({
+    where: { id: characterId, userId: session.user.id },
+    select: { id: true },
+  });
+  if (!existing) return { data: null, error: "Character not found" };
+
+  await prisma.character.update({
+    where: { id: characterId },
+    data: { portraitUrl },
+  });
+  revalidatePath(`/characters/${characterId}`, "layout");
   revalidatePath("/", "layout");
   return { data: { id: characterId }, error: null };
 }

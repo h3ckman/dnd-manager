@@ -24,12 +24,19 @@ import {
   getRace,
   getClass,
 } from "@/lib/dnd";
+import { PortraitPicker } from "./portrait-picker";
+import type { PresetPortrait } from "@/lib/characters/portraits";
 
-export function CreateCharacterDialog() {
+export function CreateCharacterDialog({
+  presets,
+}: {
+  presets: PresetPortrait[];
+}) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [race, setRace] = useState(RACES[0].name);
   const [characterClass, setCharacterClass] = useState(CLASSES[0].name);
+  const [portraitUrl, setPortraitUrl] = useState<string | null>(null);
 
   const subraces = useMemo(() => getRace(race)?.subraces ?? [], [race]);
   const subclasses = useMemo(
@@ -45,6 +52,7 @@ export function CreateCharacterDialog() {
       } else {
         toast.success("Character created");
         setOpen(false);
+        setPortraitUrl(null);
       }
     });
   }
@@ -64,6 +72,19 @@ export function CreateCharacterDialog() {
           </DialogDescription>
         </DialogHeader>
         <form action={onSubmit} className="flex flex-col gap-4">
+          <input
+            type="hidden"
+            name="portraitUrl"
+            value={portraitUrl ?? ""}
+          />
+          <div className="flex flex-col gap-2">
+            <Label>Portrait</Label>
+            <PortraitPicker
+              value={portraitUrl}
+              onChange={setPortraitUrl}
+              presets={presets}
+            />
+          </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="char-name">Name</Label>
             <Input id="char-name" name="name" required />
