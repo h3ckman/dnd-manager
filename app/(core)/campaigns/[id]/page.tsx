@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { requireCampaignMember } from "@/lib/campaigns/access";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { EditablePremise } from "./_components/editable-premise";
 
 export default async function CampaignOverviewPage({
   params,
@@ -8,7 +9,7 @@ export default async function CampaignOverviewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { campaign } = await requireCampaignMember(id);
+  const { campaign, role } = await requireCampaignMember(id);
 
   const [memberCount, handoutCount, sessionCount] = await Promise.all([
     prisma.campaignMembership.count({ where: { campaignId: id } }),
@@ -30,24 +31,13 @@ export default async function CampaignOverviewPage({
         <Stat label="Sessions" value={String(sessionCount)} />
       </div>
 
-      {campaign.premise && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Premise</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm">{campaign.premise}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {!campaign.premise && (
-        <Card>
-          <CardContent className="py-8 text-center text-sm text-muted-foreground">
-            No premise yet. The DM can add one in settings.
-          </CardContent>
-        </Card>
-      )}
+      <EditablePremise
+        campaignId={id}
+        name={campaign.name}
+        setting={campaign.setting}
+        premise={campaign.premise}
+        canEdit={role === "DM"}
+      />
     </div>
   );
 }
