@@ -22,6 +22,7 @@ export async function listCharactersForUser(userId: string) {
       race: true,
       characterClass: true,
       level: true,
+      portraitUrl: true,
       updatedAt: true,
     },
   });

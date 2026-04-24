@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCampaignMember } from "@/lib/campaigns/access";
 import { listCharactersForUser } from "@/lib/characters/access";
 import { Card, CardContent } from "@/components/ui/card";
+import { Portrait } from "@/app/(core)/_components/portrait";
 import { AssignCharacterDialog } from "./_components/assign-character-dialog";
 import { RemoveMemberButton } from "./_components/remove-member-button";
 import { CharacterStatus } from "./_components/character-status";
@@ -26,6 +27,7 @@ export default async function RosterPage({
           characterClass: true,
           subclass: true,
           level: true,
+          portraitUrl: true,
           armorClass: true,
           maxHp: true,
           currentHp: true,
@@ -57,9 +59,12 @@ export default async function RosterPage({
         return (
           <Card key={m.id}>
             <CardContent className="flex items-start gap-3 py-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold">
-                {m.user.name.slice(0, 1).toUpperCase()}
-              </div>
+              <Portrait
+                src={m.character?.portraitUrl ?? null}
+                alt={m.character?.name ?? m.user.name}
+                size={40}
+                fallbackText={m.user.name}
+              />
               <div className="flex flex-1 flex-col gap-1">
                 <div className="flex items-baseline gap-2">
                   <span className="font-medium">{m.user.name}</span>

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Portrait } from "./_components/portrait";
 import {
   DicesIcon,
   NotebookTextIcon,
@@ -41,11 +42,20 @@ export default async function Home() {
 
       {active ? (
         <Card>
-          <CardHeader>
-            <CardTitle>{active.name}</CardTitle>
-            <CardDescription>
-              Level {active.level} {active.race} {active.characterClass}
-            </CardDescription>
+          <CardHeader className="flex-row items-center gap-4">
+            <Portrait
+              src={active.portraitUrl}
+              alt={active.name}
+              size={56}
+              rounded="lg"
+              fallbackText={active.name}
+            />
+            <div className="flex flex-col">
+              <CardTitle>{active.name}</CardTitle>
+              <CardDescription>
+                Level {active.level} {active.race} {active.characterClass}
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             <LinkButton href={`/characters/${active.id}/sheet`} icon={<ScrollTextIcon />}>
