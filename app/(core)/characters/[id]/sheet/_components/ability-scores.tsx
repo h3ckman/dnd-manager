@@ -36,7 +36,10 @@ export function AbilityScores({
         const score = scores[ability] ?? 10;
         const mod = abilityModifier(score);
         return (
-          <Card key={ability}>
+          <Card
+            key={ability}
+            className="bg-gradient-to-b from-muted/60 to-card ring-foreground/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_1px_2px_rgba(0,0,0,0.08)] dark:from-muted/30 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_1px_2px_rgba(0,0,0,0.4)]"
+          >
             <CardContent className="flex flex-col items-center gap-2 py-4">
               <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {ABILITY_LABELS[ability]}
@@ -51,7 +54,7 @@ export function AbilityScores({
                 max={30}
                 disabled={pending}
                 onBlur={(e) => onBlur(ability, e.target.value)}
-                className="w-16 rounded-md border bg-background px-2 py-1 text-center text-sm tabular-nums"
+                className="w-16 rounded-md border border-foreground/10 bg-background/80 px-2 py-1 text-center text-sm tabular-nums shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)]"
               />
             </CardContent>
           </Card>
