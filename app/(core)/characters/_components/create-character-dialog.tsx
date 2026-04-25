@@ -63,7 +63,7 @@ export function CreateCharacterDialog({
         <PlusIcon className="size-4" />
         New character
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Create character</DialogTitle>
           <DialogDescription>
@@ -72,11 +72,7 @@ export function CreateCharacterDialog({
           </DialogDescription>
         </DialogHeader>
         <form action={onSubmit} className="flex flex-col gap-4">
-          <input
-            type="hidden"
-            name="portraitUrl"
-            value={portraitUrl ?? ""}
-          />
+          <input type="hidden" name="portraitUrl" value={portraitUrl ?? ""} />
           <div className="flex flex-col gap-2">
             <Label>Portrait</Label>
             <PortraitPicker
