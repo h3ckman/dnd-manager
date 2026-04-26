@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     ports:
       - "5435:5432"
     environment:
@@ -8,22 +8,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: dnd-manager
     volumes:
-      - pgdata:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 5s
-  #     timeout: 3s
-  #     retries: 5
-
-  # app:
-  #   build: .
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     DATABASE_URL: postgresql://postgres:postgres@postgres:5432/something
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
+      - pgdata:/var/lib/postgresql
 
 volumes:
   pgdata:

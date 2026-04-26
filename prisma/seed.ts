@@ -19,14 +19,8 @@ const users: SeedUser[] = [
   {
     email: "admin@example.com",
     name: "Admin User",
-    password: "ChangeMe123!",
+    password: "password",
     role: "ADMIN",
-  },
-  {
-    email: "viewer@example.com",
-    name: "Viewer User",
-    password: "ChangeMe123!",
-    role: "VIEWER",
   },
 ];
 

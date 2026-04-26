@@ -150,7 +150,7 @@ function LinkButton({
   children: React.ReactNode;
 }) {
   return (
-    <Button variant="outline" render={<Link href={href} />}>
+    <Button variant="outline" nativeButton={false} render={<Link href={href} />}>
       {icon}
       {children}
     </Button>
