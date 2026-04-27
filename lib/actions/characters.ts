@@ -9,7 +9,12 @@ import {
   clearActiveCharacterId,
   writeActiveCharacterId,
 } from "@/lib/characters/active";
-import { ABILITY_NAMES, SKILLS, getClass, getRace } from "@/lib/dnd";
+import {
+  buildBlankDraft,
+  buildQuickDraft,
+} from "@/lib/characters/draft-builders";
+import type { CharacterDraft } from "@/lib/characters/draft-types";
+import { writeCharacterFromDraft } from "@/lib/characters/build";
 
 type ActionResult<T> =
   | { data: T; error: null }
@@ -23,7 +28,7 @@ const PortraitSchema = z
     "Portrait must be a preset path or image data URL",
   );
 
-const CreateSchema = z.object({
+const IdentityShape = {
   name: z.string().min(1, "Name required").max(60),
   race: z.string().min(1, "Race required"),
   subrace: z.string().optional(),
@@ -32,16 +37,12 @@ const CreateSchema = z.object({
   background: z.string().min(1, "Background required"),
   alignment: z.string().min(1, "Alignment required"),
   portraitUrl: PortraitSchema.optional(),
-});
+};
 
-export async function createCharacter(
-  _prev: { error: string | null } | undefined,
-  formData: FormData,
-): Promise<{ error: string | null }> {
-  const session = await getSession();
-  if (!session) return { error: "Unauthorized" };
+const BlankSchema = z.object(IdentityShape);
 
-  const parsed = CreateSchema.safeParse({
+function readIdentityFromForm(formData: FormData) {
+  return {
     name: formData.get("name"),
     race: formData.get("race"),
     subrace: formData.get("subrace") || undefined,
@@ -50,52 +51,155 @@ export async function createCharacter(
     background: formData.get("background"),
     alignment: formData.get("alignment"),
     portraitUrl: formData.get("portraitUrl") || undefined,
-  });
+  };
+}
+
+async function commitDraft(
+  userId: string,
+  draft: CharacterDraft,
+): Promise<{ id: string }> {
+  const result = await writeCharacterFromDraft(userId, draft);
+  await writeActiveCharacterId(result.id);
+  revalidatePath("/characters");
+  revalidatePath("/", "layout");
+  return result;
+}
+
+export async function createBlankCharacter(
+  _prev: { error: string | null } | undefined,
+  formData: FormData,
+): Promise<{ error: string | null }> {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  const parsed = BlankSchema.safeParse(readIdentityFromForm(formData));
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const classDef = getClass(parsed.data.characterClass);
-  const raceDef = getRace(parsed.data.race);
-
-  const character = await prisma.character.create({
-    data: {
-      userId: session.user.id,
-      name: parsed.data.name,
-      race: parsed.data.race,
-      subrace: parsed.data.subrace,
-      characterClass: parsed.data.characterClass,
-      subclass: parsed.data.subclass,
-      background: parsed.data.background,
-      alignment: parsed.data.alignment,
-      portraitUrl: parsed.data.portraitUrl,
-      level: 1,
-      hitDieType: classDef?.hitDie ?? 8,
-      hitDiceTotal: 1,
-      maxHp: classDef ? classDef.hitDie + 0 : 8,
-      currentHp: classDef ? classDef.hitDie + 0 : 8,
-      speed: raceDef?.speed ?? 30,
-      spellcastingAbility: classDef?.spellcastingAbility ?? null,
-      abilities: {
-        create: ABILITY_NAMES.map((ability) => ({ ability, score: 10 })),
-      },
-      savingThrows: {
-        create: ABILITY_NAMES.map((ability) => ({
-          ability,
-          proficient: classDef?.savingThrows.includes(ability) ?? false,
-        })),
-      },
-      skills: {
-        create: SKILLS.map((s) => ({ skill: s.name })),
-      },
-    },
-    select: { id: true },
-  });
-
-  await writeActiveCharacterId(character.id);
-  revalidatePath("/characters");
-  revalidatePath("/", "layout");
+  const draft = buildBlankDraft(parsed.data);
+  await commitDraft(session.user.id, draft);
   return { error: null };
+}
+
+const QuickFormSchema = z.object(IdentityShape);
+
+export async function createQuickCharacter(
+  _prev: { error: string | null } | undefined,
+  formData: FormData,
+): Promise<{ error: string | null }> {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  const parsed = QuickFormSchema.safeParse(readIdentityFromForm(formData));
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const draft = buildQuickDraft(parsed.data);
+  await commitDraft(session.user.id, draft);
+  return { error: null };
+}
+
+const StandardSchema: z.ZodType<CharacterDraft> = z.object({
+  identity: z.object({
+    ...IdentityShape,
+    personality: z.string().optional(),
+    ideals: z.string().optional(),
+    bonds: z.string().optional(),
+    flaws: z.string().optional(),
+    backstory: z.string().optional(),
+    appearance: z.string().optional(),
+  }),
+  abilities: z.object({
+    STR: z.number().int().min(1).max(30),
+    DEX: z.number().int().min(1).max(30),
+    CON: z.number().int().min(1).max(30),
+    INT: z.number().int().min(1).max(30),
+    WIS: z.number().int().min(1).max(30),
+    CHA: z.number().int().min(1).max(30),
+  }),
+  skillProficiencies: z.array(z.string()),
+  inventory: z.array(
+    z.object({
+      name: z.string().min(1),
+      quantity: z.number().int().positive().optional(),
+      type: z.string().optional(),
+      rarity: z.string().optional(),
+      weight: z.number().nonnegative().optional(),
+      description: z.string().optional(),
+      equipped: z.boolean().optional(),
+      attuned: z.boolean().optional(),
+    }),
+  ),
+  spells: z.array(
+    z.object({
+      name: z.string().min(1),
+      level: z.number().int().min(0).max(9).optional(),
+      school: z.string().optional(),
+      castingTime: z.string().optional(),
+      range: z.string().optional(),
+      components: z.string().optional(),
+      duration: z.string().optional(),
+      description: z.string().optional(),
+      prepared: z.boolean().optional(),
+      alwaysPrepared: z.boolean().optional(),
+    }),
+  ),
+  features: z.array(
+    z.object({
+      name: z.string().min(1),
+      source: z.string().min(1),
+      description: z.string().min(1),
+    }),
+  ),
+}) as z.ZodType<CharacterDraft>;
+
+export async function createStandardCharacter(
+  input: CharacterDraft,
+): Promise<ActionResult<{ id: string }>> {
+  const session = await getSession();
+  if (!session) return { data: null, error: "Unauthorized" };
+
+  const parsed = StandardSchema.safeParse(input);
+  if (!parsed.success) {
+    return { data: null, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const result = await commitDraft(session.user.id, parsed.data);
+  return { data: result, error: null };
+}
+
+export async function createCharacterFromPreset(
+  presetId: string,
+  overrides?: { name?: string; portraitUrl?: string },
+): Promise<ActionResult<{ id: string }>> {
+  const session = await getSession();
+  if (!session) return { data: null, error: "Unauthorized" };
+
+  const preset = await prisma.characterPreset.findUnique({
+    where: { id: presetId },
+    select: { payload: true },
+  });
+  if (!preset) return { data: null, error: "Preset not found" };
+
+  const payload = preset.payload as unknown as CharacterDraft & { version?: number };
+
+  const draft: CharacterDraft = {
+    identity: {
+      ...payload.identity,
+      ...(overrides?.name ? { name: overrides.name } : {}),
+      ...(overrides?.portraitUrl !== undefined ? { portraitUrl: overrides.portraitUrl } : {}),
+    },
+    abilities: payload.abilities,
+    skillProficiencies: payload.skillProficiencies,
+    inventory: payload.inventory,
+    spells: payload.spells,
+    features: payload.features,
+  };
+
+  const result = await commitDraft(session.user.id, draft);
+  return { data: result, error: null };
 }
 
 export async function selectCharacter(characterId: string): Promise<void> {
@@ -129,7 +233,7 @@ export async function deleteCharacter(
   return { data: { id: characterId }, error: null };
 }
 
-const IdentitySchema = z.object({
+const IdentityUpdateSchema = z.object({
   name: z.string().min(1).max(60),
   race: z.string().min(1),
   subrace: z.string().optional(),
@@ -147,12 +251,12 @@ const IdentitySchema = z.object({
 
 export async function updateCharacterIdentity(
   characterId: string,
-  input: z.infer<typeof IdentitySchema>,
+  input: z.infer<typeof IdentityUpdateSchema>,
 ): Promise<ActionResult<{ id: string }>> {
   const session = await getSession();
   if (!session) return { data: null, error: "Unauthorized" };
 
-  const parsed = IdentitySchema.safeParse(input);
+  const parsed = IdentityUpdateSchema.safeParse(input);
   if (!parsed.success) {
     return { data: null, error: parsed.error.issues[0]?.message ?? "Invalid" };
   }

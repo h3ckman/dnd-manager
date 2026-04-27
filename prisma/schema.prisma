@@ -393,3 +393,24 @@ model SessionLog {
 
   @@index([campaignId])
 }
+
+model CharacterPreset {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  archetype      String
+  characterClass String
+  subclass       String?
+  race           String
+  subrace        String?
+  background     String
+  alignment      String
+  summary        String
+  portraitUrl    String?
+  payload        Json
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([characterClass])
+  @@index([archetype])
+}

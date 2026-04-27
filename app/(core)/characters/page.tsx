@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
+import { PlusIcon } from "lucide-react";
 import { requireAuth } from "@/lib/auth/can";
 import { listCharactersForUser } from "@/lib/characters/access";
-import { listPresetPortraits } from "@/lib/characters/portraits";
 import { readActiveCharacterId } from "@/lib/characters/active";
 import {
   Card,
@@ -13,15 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CreateCharacterDialog } from "./_components/create-character-dialog";
+import { Button } from "@/components/ui/button";
 import { DeleteCharacterButton } from "./_components/delete-character-button";
 import { format } from "date-fns";
 
 export default async function CharactersPage() {
   const session = await requireAuth();
-  const [characters, presets, activeId] = await Promise.all([
+  const [characters, activeId] = await Promise.all([
     listCharactersForUser(session.user.id),
-    listPresetPortraits(),
     readActiveCharacterId(),
   ]);
 
@@ -34,7 +33,10 @@ export default async function CharactersPage() {
             Your adventuring party. Pick one to open its tools.
           </p>
         </div>
-        <CreateCharacterDialog presets={presets} />
+        <Button nativeButton={false} render={<Link href="/characters/new" />}>
+          <PlusIcon className="size-4" />
+          New character
+        </Button>
       </div>
 
       {characters.length === 0 ? (
