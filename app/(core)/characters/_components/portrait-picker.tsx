@@ -94,7 +94,7 @@ export function PortraitPicker({
       </div>
 
       {presets.length > 0 && (
-        <div className="grid gap-2 grid-cols-6">
+        <div className="grid gap-2 grid-cols-6 max-w-xl">
           {presets.map((p) => {
             const selected = value === p.url;
             return (
