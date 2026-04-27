@@ -105,7 +105,7 @@ export function AppSidebar({
           icon: <InfoIcon />,
         },
         {
-          title: "Roster",
+          title: "Party",
           url: `/campaigns/${currentCampaign.id}/roster`,
           icon: <UsersIcon />,
         },

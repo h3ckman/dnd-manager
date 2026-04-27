@@ -13,7 +13,7 @@ export default async function CampaignLayout({
 
   const tabs = [
     { href: `/campaigns/${id}`, label: "Overview" },
-    { href: `/campaigns/${id}/roster`, label: "Roster" },
+    { href: `/campaigns/${id}/roster`, label: "Party" },
     { href: `/campaigns/${id}/handouts`, label: "Handouts" },
     { href: `/campaigns/${id}/sessions`, label: "Session Log" },
     ...(role === "DM"
