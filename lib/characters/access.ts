@@ -24,6 +24,11 @@ export async function listCharactersForUser(userId: string) {
       level: true,
       portraitUrl: true,
       updatedAt: true,
+      currentHp: true,
+      maxHp: true,
+      tempHp: true,
+      armorClass: true,
+      gold: true,
     },
   });
 }
