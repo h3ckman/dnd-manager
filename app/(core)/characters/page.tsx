@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import {
   ChevronRightIcon,
   CoinsIcon,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/item";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
@@ -66,15 +66,15 @@ export default async function CharactersPage() {
                 role="listitem"
                 render={
                   <Link href={`/characters/${c.id}/sheet`}>
-                    <ItemMedia
-                      variant="image"
-                      className="size-24 self-center group-has-data-[slot=item-description]/item:self-center"
-                    >
-                      <Portrait
-                        src={c.portraitUrl}
-                        alt={c.name}
-                        fallbackText={c.name}
-                      />
+                    <ItemMedia className="self-center group-has-data-[slot=item-description]/item:self-center">
+                      <Avatar className="size-24">
+                        {c.portraitUrl && (
+                          <AvatarImage src={c.portraitUrl} alt={c.name} />
+                        )}
+                        <AvatarFallback>
+                          {c.name.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     </ItemMedia>
                     <ItemContent>
                       <ItemTitle className="text-lg font-semibold">
@@ -151,31 +151,4 @@ function HpBar({
       </span>
     </div>
   );
-}
-
-function Portrait({
-  src,
-  alt,
-  fallbackText,
-}: {
-  src: string | null;
-  alt: string;
-  fallbackText: string;
-}) {
-  if (!src) {
-    return (
-      <div className="flex size-full items-center justify-center bg-muted">
-        <span className="text-sm font-bold uppercase text-muted-foreground">
-          {fallbackText.slice(0, 1)}
-        </span>
-      </div>
-    );
-  }
-  // if (src.startsWith("data:")) {
-  //   return (
-  //     // eslint-disable-next-line @next/next/no-img-element
-  //     <img src={src} alt={alt} />
-  //   );
-  // }
-  return <Image src={src} alt={alt} width={96} height={96} />;
 }
