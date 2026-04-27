@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth/session";
+import { abilityModifier } from "@/lib/dnd/abilities";
 
 export async function requireCharacter(characterId: string) {
   const session = await getSession();
@@ -13,7 +14,7 @@ export async function requireCharacter(characterId: string) {
 }
 
 export async function listCharactersForUser(userId: string) {
-  return prisma.character.findMany({
+  const characters = await prisma.character.findMany({
     where: { userId },
     orderBy: [{ updatedAt: "desc" }],
     select: {
@@ -29,6 +30,15 @@ export async function listCharactersForUser(userId: string) {
       tempHp: true,
       armorClass: true,
       gold: true,
+      speed: true,
+      abilities: {
+        where: { ability: "DEX" },
+        select: { score: true },
+      },
     },
   });
+  return characters.map(({ abilities, ...c }) => ({
+    ...c,
+    initiative: abilityModifier(abilities[0]?.score ?? 10),
+  }));
 }

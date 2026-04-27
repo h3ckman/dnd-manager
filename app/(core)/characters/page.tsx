@@ -1,29 +1,12 @@
 import Link from "next/link";
-import {
-  ChevronRightIcon,
-  CoinsIcon,
-  HeartIcon,
-  PlusIcon,
-  ShieldIcon,
-} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { requireAuth } from "@/lib/auth/can";
 import { listCharactersForUser } from "@/lib/characters/access";
 import { readActiveCharacterId } from "@/lib/characters/active";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
-import { Badge } from "@/components/ui/badge";
+import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { CharacterItem } from "@/components/character-item";
 
 export default async function CharactersPage() {
   const session = await requireAuth();
@@ -57,98 +40,16 @@ export default async function CharactersPage() {
         </Card>
       ) : (
         <ItemGroup className="grid grid-cols-1 gap-2 xl:grid-cols-2">
-          {characters.map((c) => {
-            const isActive = c.id === activeId;
-            return (
-              <Item
-                key={c.id}
-                variant="outline"
-                role="listitem"
-                render={
-                  <Link href={`/characters/${c.id}/sheet`}>
-                    <ItemMedia className="self-center group-has-data-[slot=item-description]/item:self-center">
-                      <Avatar className="size-24">
-                        {c.portraitUrl && (
-                          <AvatarImage src={c.portraitUrl} alt={c.name} />
-                        )}
-                        <AvatarFallback>
-                          {c.name.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </ItemMedia>
-                    <ItemContent>
-                      <ItemTitle className="text-lg font-semibold">
-                        {c.name}
-                      </ItemTitle>
-                      <ItemDescription>
-                        Level {c.level} {c.race} {c.characterClass}
-                      </ItemDescription>
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        {isActive && (
-                          <Badge className="border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
-                            Active
-                          </Badge>
-                        )}
-                        <Badge className="border-sky-500/40 bg-sky-500/15 text-sky-700 dark:text-sky-300">
-                          <ShieldIcon className="size-3" />
-                          Armor Class
-                          <span className="tabular-nums">{c.armorClass}</span>
-                        </Badge>
-                        <Badge className="border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                          <CoinsIcon className="size-3" />
-                          Gold
-                          <span className="tabular-nums">{c.gold}</span>
-                        </Badge>
-                      </div>
-                      <HpBar
-                        current={c.currentHp}
-                        max={c.maxHp}
-                        temp={c.tempHp}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Updated {format(c.updatedAt, "MMM d, yyyy")}
-                      </p>
-                    </ItemContent>
-                    <ItemActions>
-                      <ChevronRightIcon className="size-4" />
-                    </ItemActions>
-                  </Link>
-                }
-              />
-            );
-          })}
+          {characters.map((c) => (
+            <CharacterItem
+              key={c.id}
+              character={c}
+              href={`/characters/${c.id}/sheet`}
+              isActive={c.id === activeId}
+            />
+          ))}
         </ItemGroup>
       )}
-    </div>
-  );
-}
-
-function HpBar({
-  current,
-  max,
-  temp,
-}: {
-  current: number;
-  max: number;
-  temp: number;
-}) {
-  const pct = max > 0 ? Math.max(0, Math.min(100, (current / max) * 100)) : 0;
-  const tone =
-    pct > 50 ? "bg-emerald-500" : pct > 25 ? "bg-amber-500" : "bg-rose-500";
-  return (
-    <div className="flex items-center gap-2">
-      <HeartIcon className="size-3.5 shrink-0 text-muted-foreground" />
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-        <div
-          className={cn("h-full rounded-full transition-all", tone)}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className="text-xs font-medium tabular-nums text-muted-foreground">
-        {current}
-        {temp > 0 && <span className="text-emerald-500"> +{temp}</span>}
-        <span className="text-muted-foreground/60"> / {max}</span>
-      </span>
     </div>
   );
 }

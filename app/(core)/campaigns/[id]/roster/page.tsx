@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { requireCampaignMember } from "@/lib/campaigns/access";
 import { listCharactersForUser } from "@/lib/characters/access";
-import { Card, CardContent } from "@/components/ui/card";
-import { Portrait } from "@/app/(core)/_components/portrait";
+import { ItemGroup } from "@/components/ui/item";
+import { CharacterItem } from "@/components/character-item";
+import { abilityModifier } from "@/lib/dnd/abilities";
 import { AssignCharacterDialog } from "./_components/assign-character-dialog";
 import { RemoveMemberButton } from "./_components/remove-member-button";
-import { CharacterStatus } from "./_components/character-status";
 
 export default async function RosterPage({
   params,
@@ -25,23 +25,18 @@ export default async function RosterPage({
           name: true,
           race: true,
           characterClass: true,
-          subclass: true,
           level: true,
           portraitUrl: true,
           armorClass: true,
           maxHp: true,
           currentHp: true,
           tempHp: true,
+          gold: true,
+          updatedAt: true,
           speed: true,
-          inspiration: true,
-          abilities: { select: { ability: true, score: true } },
-          skills: {
-            select: { skill: true, proficient: true, expertise: true },
-            where: { skill: "PERCEPTION" },
-          },
-          conditions: {
-            select: { id: true, name: true, level: true },
-            orderBy: { name: "asc" },
+          abilities: {
+            where: { ability: "DEX" },
+            select: { score: true },
           },
         },
       },
@@ -52,49 +47,38 @@ export default async function RosterPage({
   const myCharacters = await listCharactersForUser(userId);
 
   return (
-    <div className="flex flex-col gap-3">
+    <ItemGroup className="grid grid-cols-1 gap-2 xl:grid-cols-2">
       {members.map((m) => {
         const isSelf = m.userId === userId;
         const isDm = m.role === "DM";
+        const character = m.character
+          ? (() => {
+              const { abilities, ...rest } = m.character;
+              return {
+                ...rest,
+                initiative: abilityModifier(abilities[0]?.score ?? 10),
+              };
+            })()
+          : null;
         return (
-          <Card key={m.id}>
-            <CardContent className="flex items-start gap-3 py-3">
-              <Portrait
-                src={m.character?.portraitUrl ?? null}
-                alt={m.character?.name ?? m.user.name}
-                size={40}
-                fallbackText={m.user.name}
-              />
-              <div className="flex flex-1 flex-col gap-1">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-medium">{m.user.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {isDm ? "DM" : "Player"}
-                    {isSelf ? " · you" : ""}
-                  </span>
-                </div>
-                {m.character ? (
-                  <>
-                    <div className="text-xs text-muted-foreground">
-                      Playing:{" "}
-                      <span className="font-medium text-foreground">
-                        {m.character.name}
-                      </span>{" "}
-                      · Lvl {m.character.level} {m.character.race}{" "}
-                      {m.character.characterClass}
-                      {m.character.subclass ? ` (${m.character.subclass})` : ""}
-                    </div>
-                    <CharacterStatus character={m.character} />
-                  </>
-                ) : (
-                  <div className="text-xs text-muted-foreground">
-                    {isDm
-                      ? "No character (DM)"
-                      : "No character assigned yet"}
-                  </div>
-                )}
+          <CharacterItem
+            key={m.id}
+            character={character}
+            fallbackName={m.user.name}
+            fallbackLabel={
+              isDm ? "No character (DM)" : "No character assigned yet"
+            }
+            header={
+              <div className="flex items-baseline gap-2">
+                <span className="font-medium">{m.user.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {isDm ? "DM" : "Player"}
+                  {isSelf ? " · you" : ""}
+                </span>
               </div>
-              <div className="flex shrink-0 items-center gap-1">
+            }
+            actions={
+              <>
                 {isSelf && !isDm && (
                   <AssignCharacterDialog
                     campaignId={id}
@@ -109,11 +93,11 @@ export default async function RosterPage({
                     name={m.user.name}
                   />
                 )}
-              </div>
-            </CardContent>
-          </Card>
+              </>
+            }
+          />
         );
       })}
-    </div>
+    </ItemGroup>
   );
 }
