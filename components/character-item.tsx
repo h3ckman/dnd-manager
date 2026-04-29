@@ -88,28 +88,28 @@ export function CharacterItem({
             </ItemDescription>
             <div className="flex flex-wrap items-center gap-1.5">
               {isActive && (
-                <Badge className="border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                <Badge className="border-emerald-500/20 bg-emerald-500/8 text-emerald-700 dark:text-emerald-400">
                   Active
                 </Badge>
               )}
-              <Badge className="border-sky-500/40 bg-sky-500/15 text-sky-700 dark:text-sky-300">
+              <Badge className="border-sky-500/20 bg-sky-500/8 text-sky-700 dark:text-sky-400">
                 <ShieldIcon className="size-3" />
                 AC
                 <span className="tabular-nums">{character.armorClass}</span>
               </Badge>
-              <Badge className="border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300">
+              <Badge className="border-amber-500/20 bg-amber-500/8 text-amber-700 dark:text-amber-400">
                 <CoinsIcon className="size-3" />
                 Gold
                 <span className="tabular-nums">{character.gold}</span>
               </Badge>
-              <Badge className="border-rose-500/40 bg-rose-500/15 text-rose-700 dark:text-rose-300">
+              <Badge className="border-rose-500/20 bg-rose-500/8 text-rose-700 dark:text-rose-400">
                 <ZapIcon className="size-3" />
                 Init
                 <span className="tabular-nums">
                   {formatModifier(character.initiative)}
                 </span>
               </Badge>
-              <Badge className="border-violet-500/40 bg-violet-500/15 text-violet-700 dark:text-violet-300">
+              <Badge className="border-violet-500/20 bg-violet-500/8 text-violet-700 dark:text-violet-400">
                 <FootprintsIcon className="size-3" />
                 Spd
                 <span className="tabular-nums">{character.speed}ft</span>
