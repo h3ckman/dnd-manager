@@ -33,15 +33,25 @@ export async function loginAction(
   }
 
   const { email, password } = parsed.data;
+  const normalizedEmail = email.toLowerCase();
   const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
+    where: { email: normalizedEmail },
   });
   if (!user || !user.active) {
     return { error: "Invalid email or password" };
   }
+  if (!user.passwordHash) {
+    return { error: "This account uses Google sign-in" };
+  }
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) {
     return { error: "Invalid email or password" };
+  }
+
+  if (!user.emailVerified) {
+    redirect(
+      `/verify-email?email=${encodeURIComponent(normalizedEmail)}&unverified=1`,
+    );
   }
 
   await createSession(user.id);

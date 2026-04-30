@@ -55,6 +55,7 @@ export async function inviteUser(
       name: parsed.data.name,
       passwordHash,
       role: parsed.data.role,
+      emailVerified: new Date(),
     },
     select: { id: true },
   });

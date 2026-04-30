@@ -36,7 +36,10 @@ export async function verifySessionToken(
   }
 }
 
-export type SessionUser = Pick<User, "id" | "email" | "name" | "role">;
+export type SessionUser = Pick<
+  User,
+  "id" | "email" | "name" | "role" | "emailVerified"
+>;
 
 export type Session = {
   sessionId: string;
@@ -77,6 +80,7 @@ export async function getSession(): Promise<Session | null> {
           name: true,
           role: true,
           active: true,
+          emailVerified: true,
         },
       },
     },
@@ -92,6 +96,7 @@ export async function getSession(): Promise<Session | null> {
       email: session.user.email,
       name: session.user.name,
       role: session.user.role,
+      emailVerified: session.user.emailVerified,
     },
   };
 }
