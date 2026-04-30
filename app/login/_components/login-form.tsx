@@ -5,7 +5,7 @@ import { useActionState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { loginAction, type LoginState } from "@/lib/actions/auth";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -90,12 +90,13 @@ export function LoginForm() {
           <span className="bg-card relative z-10 px-2">or</span>
           <span className="bg-border absolute inset-x-0 top-1/2 -z-0 h-px" />
         </div>
-        <a
-          href="/api/auth/google/start"
-          className={buttonVariants({ variant: "outline" })}
+        <Button
+          variant="outline"
+          render={<a href="/api/auth/google/start" />}
+          nativeButton={false}
         >
           Continue with Google
-        </a>
+        </Button>
         <p className="text-sm text-muted-foreground text-center">
           Don&apos;t have an account?{" "}
           <Link href="/register" className="underline">

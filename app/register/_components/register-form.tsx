@@ -7,7 +7,7 @@ import {
   registerAction,
   type RegisterState,
 } from "@/lib/actions/register";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -85,12 +85,13 @@ export function RegisterForm() {
           <span className="bg-card relative z-10 px-2">or</span>
           <span className="bg-border absolute inset-x-0 top-1/2 -z-0 h-px" />
         </div>
-        <a
-          href="/api/auth/google/start"
-          className={buttonVariants({ variant: "outline" })}
+        <Button
+          variant="outline"
+          render={<a href="/api/auth/google/start" />}
+          nativeButton={false}
         >
           Continue with Google
-        </a>
+        </Button>
         <p className="text-sm text-muted-foreground text-center">
           Already have an account?{" "}
           <Link href="/login" className="underline">
