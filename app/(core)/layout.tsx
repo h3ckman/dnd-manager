@@ -30,7 +30,7 @@ export default async function AuthedLayout({
   return (
     <TooltipProvider>
       <SidebarProvider
-        style={{ "--sidebar-width": "21rem" } as React.CSSProperties}
+        style={{ "--sidebar-width": "16rem" } as React.CSSProperties}
       >
         <AppSidebar
           user={session.user}
