@@ -7,10 +7,11 @@ import {
   fetchUserinfo,
 } from "@/lib/auth/oauth/google";
 import { consumeStateCookie } from "@/lib/auth/oauth/state";
+import { appUrl } from "@/lib/url";
 
 function errorRedirect(request: Request, code: string): NextResponse {
   return NextResponse.redirect(
-    new URL(`/login?error=${encodeURIComponent(code)}`, request.url),
+    appUrl(`/login?error=${encodeURIComponent(code)}`, request),
   );
 }
 
@@ -119,5 +120,5 @@ export async function GET(request: Request) {
   await createSession(userId);
   await logAudit(userId, auditAction);
 
-  return NextResponse.redirect(new URL("/", request.url));
+  return NextResponse.redirect(appUrl("/", request));
 }
