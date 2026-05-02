@@ -5,17 +5,18 @@ import {
   buildAuthorizeUrl,
 } from "@/lib/auth/oauth/google";
 import { generateState, setStateCookie } from "@/lib/auth/oauth/state";
+import { appUrl } from "@/lib/url";
 
 export async function GET(request: Request) {
   const session = await getSession();
   if (session?.user.emailVerified) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(appUrl("/", request));
   }
 
   const redirectUri = process.env.GOOGLE_REDIRECT_URI;
   if (!redirectUri) {
     return NextResponse.redirect(
-      new URL("/login?error=oauth_misconfigured", request.url),
+      appUrl("/login?error=oauth_misconfigured", request),
     );
   }
 
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
   } catch (err) {
     if (err instanceof GoogleOAuthError) {
       return NextResponse.redirect(
-        new URL("/login?error=oauth_misconfigured", request.url),
+        appUrl("/login?error=oauth_misconfigured", request),
       );
     }
     throw err;
