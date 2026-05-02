@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 const COOKIE_NAME = "session";
-const PUBLIC_PATHS = ["/login"];
+const PUBLIC_PATHS = ["/login", "/register", "/verify-email"];
 
 function secret(): Uint8Array {
   const s = process.env.AUTH_SECRET;

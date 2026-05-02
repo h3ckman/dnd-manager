@@ -19,6 +19,7 @@ export default async function AuthedLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (!session.user.emailVerified) redirect("/verify-email");
 
   const [characters, activeCharacterId, campaigns] = await Promise.all([
     listCharactersForUser(session.user.id),
@@ -29,7 +30,7 @@ export default async function AuthedLayout({
   return (
     <TooltipProvider>
       <SidebarProvider
-        style={{ "--sidebar-width": "21rem" } as React.CSSProperties}
+        style={{ "--sidebar-width": "16rem" } as React.CSSProperties}
       >
         <AppSidebar
           user={session.user}

@@ -92,18 +92,21 @@ enum CampaignRole {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String
-  passwordHash String
-  role         Role     @default(VIEWER)
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwordHash  String?
+  emailVerified DateTime?
+  role          Role      @default(VIEWER)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  sessions   Session[]
-  auditLogs  AuditLog[]
-  characters Character[]
+  sessions          Session[]
+  auditLogs         AuditLog[]
+  characters        Character[]
+  oauthAccounts     OAuthAccount[]
+  verificationCodes EmailVerificationCode[]
 
   campaignsAsDm       Campaign[]           @relation("CampaignDm")
   campaignMemberships CampaignMembership[]
@@ -120,6 +123,33 @@ model Session {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model OAuthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String
+  providerAccountId String
+  email             String?
+  createdAt         DateTime @default(now())
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model EmailVerificationCode {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash   String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  attempts   Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([userId, consumedAt])
 }
 
 model AuditLog {

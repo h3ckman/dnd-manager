@@ -60,3 +60,9 @@ export async function requireAuth() {
   if (!session) redirect("/login");
   return session;
 }
+
+export async function requireVerifiedAuth() {
+  const session = await requireAuth();
+  if (!session.user.emailVerified) redirect("/verify-email");
+  return session;
+}

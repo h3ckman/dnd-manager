@@ -20,7 +20,7 @@ export function NavMain({
   pathname: string
 }) {
   return (
-    <SidebarMenu>
+    <SidebarMenu className="gap-1">
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton
