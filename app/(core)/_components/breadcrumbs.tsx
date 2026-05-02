@@ -27,19 +27,14 @@ export function Breadcrumbs() {
   const [segments, setSegments] = useState<BreadcrumbSegment[]>([]);
 
   useEffect(() => {
-    if (pathname === "/") {
-      setSegments([{ label: "Home" }]);
-      return;
-    }
-
     const staticLabel = STATIC_ROUTES[pathname];
     if (staticLabel) {
-      setSegments([{ label: "Home", href: "/" }, { label: staticLabel }]);
+      setSegments([{ label: staticLabel }]);
       return;
     }
 
     // Fallback: derive from path segments
-    setSegments([{ label: "Home", href: "/" }, { label: pathname.slice(1) }]);
+    setSegments([{ label: pathname.slice(1) }]);
   }, [pathname]);
 
   return (

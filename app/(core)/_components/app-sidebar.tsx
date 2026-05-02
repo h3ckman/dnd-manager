@@ -24,7 +24,6 @@ import {
   BookTextIcon,
   CrownIcon,
   DicesIcon,
-  HomeIcon,
   InfoIcon,
   MessageCircleQuestionIcon,
   NotebookTextIcon,
@@ -132,7 +131,6 @@ export function AppSidebar({
     : [];
 
   const topNav: NavItem[] = [
-    { title: "Home", url: "/", icon: <HomeIcon /> },
     { title: "Characters", url: "/characters", icon: <UsersIcon /> },
     { title: "Campaigns", url: "/campaigns", icon: <SwordsIcon /> },
     { title: "Dice Roller", url: "/dice", icon: <DicesIcon /> },
