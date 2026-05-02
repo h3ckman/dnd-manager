@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cinzel, EB_Garamond, Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -13,10 +13,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
+const ebGaramond = EB_Garamond({
+  variable: "--font-eb-garamond",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["400", "500"],
+});
+
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description:
-    "Monitor, manage and optimize multi-site cold chain and HVACR operations.",
+  title: "D&D Manager",
+  description: "Manage your characters, campaigns, and adventures.",
 };
 
 export default function RootLayout({
@@ -25,9 +37,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.className} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${geistSans.className} ${geistMono.variable} ${cinzel.variable} ${ebGaramond.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 -z-10 bg-grain opacity-[0.04] mix-blend-overlay"
+        />
         {children}
         <Toaster />
       </body>

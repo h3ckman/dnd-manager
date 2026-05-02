@@ -10,6 +10,8 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
+  --font-display: var(--font-cinzel, var(--font-geist-sans));
+  --font-body: var(--font-eb-garamond, var(--font-geist-sans));
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -48,73 +50,53 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ─── Forged Tome — universal theme (obsidian + antique gold + ember) ─── */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.395 0.155 261);
-  --primary-foreground: oklch(0.985 0.002 261);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.955 0.025 250);
-  --accent-foreground: oklch(0.28 0.1 261);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.555 0.17 261);
-  --chart-1: oklch(0.555 0.17 261);
-  --chart-2: oklch(0.65 0.17 165);
-  --chart-3: oklch(0.7 0.15 55);
-  --chart-4: oklch(0.58 0.155 300);
-  --chart-5: oklch(0.55 0.18 230);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.975 0.01 250);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.395 0.155 261);
-  --sidebar-primary-foreground: oklch(0.985 0.002 261);
-  --sidebar-accent: oklch(0.945 0.03 250);
-  --sidebar-accent-foreground: oklch(0.28 0.1 261);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.555 0.17 261);
-}
+  color-scheme: dark;
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.65 0.195 261);
-  --primary-foreground: oklch(0.155 0.03 261);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.25 0.035 255);
-  --accent-foreground: oklch(0.92 0.025 261);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.555 0.17 261);
-  --chart-1: oklch(0.65 0.195 261);
-  --chart-2: oklch(0.7 0.185 165);
-  --chart-3: oklch(0.75 0.14 55);
-  --chart-4: oklch(0.65 0.155 300);
-  --chart-5: oklch(0.6 0.18 230);
-  --sidebar: oklch(0.185 0.025 258);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.58 0.22 261);
-  --sidebar-primary-foreground: oklch(0.985 0.002 261);
-  --sidebar-accent: oklch(0.25 0.035 255);
-  --sidebar-accent-foreground: oklch(0.92 0.025 261);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.555 0.17 261);
+  --background: oklch(0.16 0.012 60);
+  --foreground: oklch(0.94 0.02 80);
+
+  --card: oklch(0.21 0.018 60);
+  --card-foreground: oklch(0.94 0.02 80);
+
+  --popover: oklch(0.2 0.018 60);
+  --popover-foreground: oklch(0.94 0.02 80);
+
+  --primary: oklch(0.78 0.13 78);
+  --primary-foreground: oklch(0.18 0.02 60);
+
+  --secondary: oklch(0.26 0.022 60);
+  --secondary-foreground: oklch(0.92 0.025 78);
+
+  --muted: oklch(0.24 0.018 60);
+  --muted-foreground: oklch(0.72 0.025 75);
+
+  --accent: oklch(0.65 0.18 45);
+  --accent-foreground: oklch(0.16 0.02 60);
+
+  --destructive: oklch(0.7 0.21 25);
+
+  --border: oklch(0.78 0.13 78 / 22%);
+  --input: oklch(0.78 0.13 78 / 18%);
+  --ring: oklch(0.78 0.13 78 / 70%);
+
+  --chart-1: oklch(0.78 0.13 78);
+  --chart-2: oklch(0.68 0.18 45);
+  --chart-3: oklch(0.6 0.1 195);
+  --chart-4: oklch(0.62 0.13 50);
+  --chart-5: oklch(0.65 0.06 145);
+
+  --radius: 0.625rem;
+
+  --sidebar: oklch(0.18 0.015 60);
+  --sidebar-foreground: oklch(0.92 0.025 80);
+  --sidebar-primary: oklch(0.78 0.13 78);
+  --sidebar-primary-foreground: oklch(0.18 0.02 60);
+  --sidebar-accent: oklch(0.25 0.035 65);
+  --sidebar-accent-foreground: oklch(0.93 0.04 78);
+  --sidebar-border: oklch(0.78 0.13 78 / 18%);
+  --sidebar-ring: oklch(0.78 0.13 78 / 70%);
 }
 
 @layer base {
@@ -127,5 +109,72 @@
   html {
     @apply font-sans;
     font-size: 17px;
+  }
+}
+
+/* ─── .theme-arcane — auth-only atmospheric escalation ─── */
+/* Color tokens come from :root; this class is a marker that scopes
+   the dramatic load-in animations (rise + glow + shimmer) used by
+   the auth two-pane stage. Body backdrop & grain are layered by the
+   auth layout itself. */
+
+.bg-grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.85  0 0 0 0 0.6  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
+  background-size: 240px 240px;
+}
+
+@keyframes arcane-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes arcane-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 22px oklch(0.65 0.18 45 / 0.18))
+      drop-shadow(0 8px 24px oklch(0 0 0 / 0.45));
+  }
+  50% {
+    filter: drop-shadow(0 0 38px oklch(0.7 0.2 50 / 0.32))
+      drop-shadow(0 8px 24px oklch(0 0 0 / 0.45));
+  }
+}
+
+@keyframes arcane-shimmer {
+  from {
+    background-position: -120% 0;
+  }
+  to {
+    background-position: 220% 0;
+  }
+}
+
+.theme-arcane [data-arcane-rise] {
+  opacity: 0;
+  animation: arcane-rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: var(--arcane-delay, 0ms);
+}
+
+.theme-arcane [data-arcane-glow]:not([data-arcane-rise]) {
+  animation: arcane-glow 7s ease-in-out infinite;
+}
+
+.theme-arcane [data-arcane-rise][data-arcane-glow] {
+  animation:
+    arcane-rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards,
+    arcane-glow 7s ease-in-out 800ms infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-arcane [data-arcane-rise],
+  .theme-arcane [data-arcane-glow] {
+    animation: none;
+    opacity: 1;
   }
 }
