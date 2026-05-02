@@ -15,32 +15,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   ActivityIcon,
   BellIcon,
   DownloadIcon,
   MoreHorizontalIcon,
-  Moon,
-  Sun,
 } from "lucide-react";
 
 export function NavActions() {
-  const [dark, setDark] = React.useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("theme") === "dark";
-  });
-
-  React.useEffect(() => {
-    if (dark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  }, [dark]);
-
-  const toggleDark = () => setDark((d) => !d);
-
   return (
     <div className="flex items-center gap-2 text-sm">
       <Popover>
@@ -65,14 +48,7 @@ export function NavActions() {
           3
         </span>
       </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-7 w-7"
-        onClick={toggleDark}
-      >
-        {dark ? <Sun /> : <Moon />}
-      </Button>
+      <ThemeToggle />
       <DropdownMenu>
         <DropdownMenuTrigger
           render={

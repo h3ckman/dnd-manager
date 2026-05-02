@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleIcon } from "@/components/icons";
 
 const initialState: LoginState = { error: null };
 
@@ -46,14 +47,16 @@ export function LoginForm() {
   }, [errorCode]);
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>
-          Enter your email and password to continue.
+    <Card className="w-full gap-6 border-0 bg-transparent py-0 ring-0">
+      <CardHeader className="px-0">
+        <CardTitle className="text-3xl font-light tracking-tight">
+          Welcome back
+        </CardTitle>
+        <CardDescription className="mt-1">
+          Sign in to continue your campaign.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-5 px-0">
         <form action={formAction} className="flex flex-col gap-4">
           <input type="hidden" name="next" value={next} />
           <div className="flex flex-col gap-2">
@@ -82,24 +85,35 @@ export function LoginForm() {
               {state.error}
             </p>
           )}
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" size="lg" disabled={pending} className="mt-1">
             {pending ? "Signing in…" : "Sign in"}
           </Button>
         </form>
-        <div className="relative text-center text-xs text-muted-foreground">
-          <span className="bg-card relative z-10 px-2">or</span>
-          <span className="bg-border absolute inset-x-0 top-1/2 -z-0 h-px" />
+        <div
+          role="separator"
+          className="relative my-1 text-center text-xs uppercase tracking-[0.18em] text-muted-foreground/70"
+        >
+          <span className="relative z-10 bg-background px-3">or</span>
+          <span
+            aria-hidden
+            className="absolute inset-x-0 top-1/2 -z-0 h-px bg-border"
+          />
         </div>
         <Button
           variant="outline"
+          size="lg"
           render={<a href="/api/auth/google/start" />}
           nativeButton={false}
         >
+          <GoogleIcon className="size-4" />
           Continue with Google
         </Button>
-        <p className="text-sm text-muted-foreground text-center">
+        <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline">
+          <Link
+            href="/register"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
             Create one
           </Link>
         </p>

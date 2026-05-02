@@ -61,10 +61,12 @@ export function VerifyEmailForm({ initialEmail, unverified = false }: Props) {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Verify your email</CardTitle>
-        <CardDescription>
+    <Card className="w-full gap-6 border-0 bg-transparent py-0 ring-0">
+      <CardHeader className="px-0">
+        <CardTitle className="text-3xl font-light tracking-tight">
+          Verify your email
+        </CardTitle>
+        <CardDescription className="mt-1">
           {unverified
             ? "Your account isn't verified yet. Enter the 6-digit code we emailed to you."
             : initialEmail
@@ -72,8 +74,11 @@ export function VerifyEmailForm({ initialEmail, unverified = false }: Props) {
               : "Enter the 6-digit code we emailed to you."}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-6">
-        <form action={verifyAction} className="flex flex-col gap-4 items-center">
+      <CardContent className="flex flex-col gap-6 px-0">
+        <form
+          action={verifyAction}
+          className="flex flex-col items-center gap-5"
+        >
           <input type="hidden" name="email" value={initialEmail} />
           <input type="hidden" name="code" value={code} />
           <InputOTP
@@ -94,6 +99,7 @@ export function VerifyEmailForm({ initialEmail, unverified = false }: Props) {
           </InputOTP>
           <Button
             type="submit"
+            size="lg"
             disabled={verifying || code.length !== 6}
             className="w-full"
           >
@@ -104,6 +110,7 @@ export function VerifyEmailForm({ initialEmail, unverified = false }: Props) {
           <input type="hidden" name="email" value={initialEmail} />
           <Button
             type="submit"
+            size="lg"
             variant="outline"
             disabled={resending || cooldown > 0 || !initialEmail}
           >

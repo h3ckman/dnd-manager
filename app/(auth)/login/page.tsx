@@ -11,10 +11,8 @@ export default async function LoginPage() {
   // createSession(); cookies() can't be mutated from a server component.
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <Suspense>
-        <LoginForm />
-      </Suspense>
-    </main>
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

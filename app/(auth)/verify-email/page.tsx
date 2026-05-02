@@ -16,10 +16,8 @@ export default async function VerifyEmailPage({ searchParams }: Props) {
   const unverified = params.unverified === "1";
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <Suspense>
-        <VerifyEmailForm initialEmail={email} unverified={unverified} />
-      </Suspense>
-    </main>
+    <Suspense>
+      <VerifyEmailForm initialEmail={email} unverified={unverified} />
+    </Suspense>
   );
 }

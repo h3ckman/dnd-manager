@@ -8,10 +8,8 @@ export default async function RegisterPage() {
   if (session?.user.emailVerified) redirect("/");
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <Suspense>
-        <RegisterForm />
-      </Suspense>
-    </main>
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }
