@@ -6,7 +6,7 @@ import { readActiveCharacterId } from "@/lib/characters/active";
 import { Card, CardContent } from "@/components/ui/card";
 import { ItemGroup } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
-import { CharacterItem } from "@/components/character-item";
+import { CharacterCard } from "@/components/character-card";
 
 export default async function CharactersPage() {
   const session = await requireAuth();
@@ -41,7 +41,7 @@ export default async function CharactersPage() {
       ) : (
         <ItemGroup className="grid grid-cols-1 gap-2 xl:grid-cols-2">
           {characters.map((c) => (
-            <CharacterItem
+            <CharacterCard
               key={c.id}
               character={c}
               href={`/characters/${c.id}/sheet`}

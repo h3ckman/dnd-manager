@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCampaignMember } from "@/lib/campaigns/access";
 import { listCharactersForUser } from "@/lib/characters/access";
 import { ItemGroup } from "@/components/ui/item";
-import { CharacterItem } from "@/components/character-item";
+import { CharacterCard } from "@/components/character-card";
 import { abilityModifier } from "@/lib/dnd/abilities";
 import { AssignCharacterDialog } from "./_components/assign-character-dialog";
 import { RemoveMemberButton } from "./_components/remove-member-button";
@@ -61,7 +61,7 @@ export default async function RosterPage({
             })()
           : null;
         return (
-          <CharacterItem
+          <CharacterCard
             key={m.id}
             character={character}
             fallbackName={m.user.name}
